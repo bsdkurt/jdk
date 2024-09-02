@@ -38,7 +38,7 @@ import javax.swing.UIManager;
  * @key headful
  * @summary Verify that Ctrl Shift RIGHT/LEFT key extends columns till
  * Last/First Columns in JTable
- * @requires (os.family == "linux")
+ * @requires (os.family == "linux" | os.family == "freebsd" | os.family == "netbsd" | os.family == "openbsd")
  * @run main JTableCtrlShiftRightLeftKeyTest
  */
 

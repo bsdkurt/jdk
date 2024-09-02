@@ -74,6 +74,13 @@ import javax.swing.SwingUtilities;
 /*
  * @test
  * @key headful
+ * @requires (os.family == "freebsd" | os.family == "netbsd" | os.family == "openbsd")
+ * @run main/othervm -Dsun.java2d.xrender=false SwingButtonResizeTestWithOpenGL
+ * @run main/othervm -Dsun.java2d.xrender=true SwingButtonResizeTestWithOpenGL
+ */
+/*
+ * @test
+ * @key headful
  * @requires (os.family == "mac")
  * @run main/othervm -Dsun.java2d.metal=false SwingButtonResizeTestWithOpenGL
  * @run main/othervm -Dsun.java2d.metal=true SwingButtonResizeTestWithOpenGL
