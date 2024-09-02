@@ -51,12 +51,6 @@ closeSafely(int fd)
     return (fd == -1) ? 0 : close(fd);
 }
 
-static int
-isAsciiDigit(char c)
-{
-  return c >= '0' && c <= '9';
-}
-
 #if defined(_BSDONLY_SOURCE)
 /*
  * Quoting POSIX: "If a multi-threaded process calls fork(), the new
@@ -70,7 +64,7 @@ isAsciiDigit(char c)
  * called after fork or vfork (and before exec) so use closefrom syscall
  * which is safe to call after forking.
  */
-int
+static int
 closeDescriptors(void)
 {
 #if defined(__FreeBSD__)
@@ -82,6 +76,12 @@ closeDescriptors(void)
     return 1;
 }
 #else
+
+static int
+isAsciiDigit(char c)
+{
+  return c >= '0' && c <= '9';
+}
 
 #if defined(_AIX)
   /* AIX does not understand '/proc/self' - it requires the real process ID */

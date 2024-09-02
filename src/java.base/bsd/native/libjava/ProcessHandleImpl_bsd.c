@@ -319,7 +319,7 @@ static uid_t getUID(pid_t pid) {
  * into the Info object.
  */
 void os_getCmdlineAndUserInfo(JNIEnv *env, jobject jinfo, pid_t pid) {
-    int mib[4], nargs, i;
+    int mib[4], nargs;
     size_t size;
     char *args;
 
@@ -329,6 +329,8 @@ void os_getCmdlineAndUserInfo(JNIEnv *env, jobject jinfo, pid_t pid) {
     unix_getUserInfo(env, jinfo, getUID(pid));
 
 #ifdef __OpenBSD__
+    int i;
+
     // Get the buffer size needed
     mib[0] = CTL_KERN;
     mib[1] = KERN_PROC_ARGS;

@@ -950,7 +950,6 @@ static bool read_shared_lib_info(struct ps_prochandle* ph) {
   uintptr_t addr = ph->core->dynamic_addr;
   uintptr_t debug_base;
   uintptr_t first_link_map_addr;
-  uintptr_t ld_base_addr;
   uintptr_t link_map_addr;
   uintptr_t lib_base_diff;
   uintptr_t lib_base;
@@ -986,6 +985,7 @@ static bool read_shared_lib_info(struct ps_prochandle* ph) {
 
   // read ld_base address from struct r_debug
 #if 0  // There is no r_ldbase member on BSD
+  uintptr_t ld_base_addr;
   if (ps_pread(ph, (psaddr_t) debug_base + LD_BASE_OFFSET, &ld_base_addr,
                   sizeof(uintptr_t)) != PS_OK) {
     print_debug("can't read ld base address\n");
