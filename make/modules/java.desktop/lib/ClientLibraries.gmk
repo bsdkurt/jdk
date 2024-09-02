@@ -237,6 +237,8 @@ ifeq ($(ENABLE_HEADLESS_ONLY), false)
           unused-but-set-variable unused-function, \
       DISABLED_WARNINGS_clang_splashscreen_png.c := \
           incompatible-pointer-types, \
+      DISABLED_WARNINGS_clang_splashscreen_sys.c := unused-but-set-variable \
+          unused-variable, \
       DISABLED_WARNINGS_clang_splashscreen_sys.m := deprecated-declarations \
           unused-variable unused-but-set-variable, \
       DISABLED_WARNINGS_microsoft_dgif_lib.c := 4018 4267, \
@@ -291,6 +293,7 @@ ifeq ($(USE_EXTERNAL_HARFBUZZ), true)
   LIBFONTMANAGER_EXTRA_SRC =
   LIBFONTMANAGER_LIBS += $(HARFBUZZ_LIBS)
   LIBFONTMANAGER_CFLAGS += $(HARFBUZZ_CFLAGS)
+  HARFBUZZ_DISABLED_WARNINGS_clang := unused-variable
 else
   LIBFONTMANAGER_EXTRA_SRC = libharfbuzz
 
