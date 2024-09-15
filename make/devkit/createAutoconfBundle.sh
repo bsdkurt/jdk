@@ -40,6 +40,9 @@ case `uname -s` in
     Linux)
         os=linux
         ;;
+    *BSD)
+        os=bsd
+        ;;
     CYGWIN*)
         os=cygwin
         ;;
