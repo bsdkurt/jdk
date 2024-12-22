@@ -22,26 +22,26 @@
  *
  */
 
-// no precompiled headers
-#include "memory/allocation.inline.hpp"
-#include "runtime/mutexLocker.hpp"
+#include "precompiled.hpp"
+#include "memory/allocation.hpp"
+#include "runtime/mutex.hpp"
 #include "runtime/osThread.hpp"
 
 #include <signal.h>
 
-void OSThread::pd_initialize() {
-  _thread_id        = 0;
-  _unique_thread_id = 0;
-  _pthread_id       = nullptr;
-  _siginfo          = nullptr;
-  _ucontext         = nullptr;
-  _expanding_stack  = 0;
-  _alt_sig_stack    = nullptr;
-
+OSThread::OSThread()
+  : _thread_id(0),
+    _thread_type(),
+    _pthread_id(nullptr),
+    _unique_thread_id(0),
+    _caller_sigmask(),
+    sr(),
+    _siginfo(nullptr),
+    _ucontext(nullptr),
+    _expanding_stack(0),
+    _alt_sig_stack(nullptr),
+    _startThread_lock(new Monitor(Mutex::event, "startThread_lock")) {
   sigemptyset(&_caller_sigmask);
-
-  _startThread_lock = new Monitor(Mutex::event, "startThread_lock");
-  assert(_startThread_lock !=nullptr, "check");
 }
 
 // Additional thread_id used to correlate threads in SA
@@ -60,6 +60,6 @@ void OSThread::set_unique_thread_id() {
 #endif
 }
 
-void OSThread::pd_destroy() {
+OSThread::~OSThread() {
   delete _startThread_lock;
 }
