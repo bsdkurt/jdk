@@ -29,7 +29,6 @@
 // Sets the default values for platform dependent flags used by the runtime system.
 // (see globals.hpp)
 
-define_pd_global(bool, DontYieldALot,            false);
 define_pd_global(intx, ThreadStackSize,          2048); // 0 => use system default
 define_pd_global(intx, VMThreadStackSize,        2048);
 
