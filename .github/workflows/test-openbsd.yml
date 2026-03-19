@@ -195,6 +195,7 @@ jobs:
           cpu: 4
           envs: 'MYTOKEN'
           usesh: true
+          debug-on-error: true
           prepare: |
             mount -u -o wxallowed /home
             usermod -L pbuild root
@@ -206,6 +207,7 @@ jobs:
             done
           run: >
             ulimit -Sd $(ulimit -Hd) &&
+            ${{ steps.bundles.outputs.jdk-path }}/bin/java -XX:+PrintFlagsFinal -version &&
             gmake test-prebuilt
             TEST_JOBS=1
             TEST='${{ matrix.test-suite }}'
@@ -218,6 +220,7 @@ jobs:
             ${{ steps.extra-options.outputs.compile-jdk }}
             JTREG='JAVA_OPTIONS=-XX:-CreateCoredumpOnCrash;VERBOSE=fail,error,time;KEYWORDS=!headful;${{ steps.extra-options.outputs.extra-problem-lists }};${{ matrix.test-timeout-factor }}'
             && bash ./.github/scripts/gen-test-summary.sh "$GITHUB_STEP_SUMMARY" "$GITHUB_OUTPUT"
+            && exit 1
         if: ${{ inputs.dry-run == false }}
 
       - name: 'Check Memory, Swap and Disk Usage'
