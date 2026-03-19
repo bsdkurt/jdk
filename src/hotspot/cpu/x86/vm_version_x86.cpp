@@ -883,6 +883,7 @@ void VM_Version::get_processor_features() {
 
   // Get raw processor info
 
+  UseAVX = 1;
   get_cpu_info_stub(&_cpuid_info);
 
   assert_is_initialized();
@@ -3033,7 +3034,8 @@ VM_Version::VM_Features VM_Version::CpuidInfo::feature_flags() const {
   if (std_cpuid1_ecx.bits.hv != 0)
     vm_features.set_feature(CPU_HV);
   if (sef_cpuid7_ebx.bits.bmi1 != 0)
-    vm_features.set_feature(CPU_BMI1);
+    ;
+//    vm_features.set_feature(CPU_BMI1);
   if (std_cpuid1_edx.bits.tsc != 0)
     vm_features.set_feature(CPU_TSC);
   if (ext_cpuid7_edx.bits.tsc_invariance != 0)
@@ -3055,7 +3057,8 @@ VM_Version::VM_Features VM_Version::CpuidInfo::feature_flags() const {
   if (sef_cpuid7_ebx.bits.adx != 0)
      vm_features.set_feature(CPU_ADX);
   if (sef_cpuid7_ebx.bits.bmi2 != 0)
-    vm_features.set_feature(CPU_BMI2);
+    ;
+//    vm_features.set_feature(CPU_BMI2);
   if (sef_cpuid7_ebx.bits.sha != 0)
     vm_features.set_feature(CPU_SHA);
   if (std_cpuid1_ecx.bits.fma != 0)
@@ -3118,6 +3121,23 @@ VM_Version::VM_Features VM_Version::CpuidInfo::feature_flags() const {
        is_intel_tsc_synched_at_init())) {
     vm_features.set_feature(CPU_TSCINV);
   }
+  vm_features.clear_feature(CPU_3DNOW_PREFETCH);
+//  vm_features.clear_feature(CPU_SSE4A);
+  vm_features.clear_feature(CPU_LZCNT);
+//  vm_features.clear_feature(CPU_AVX);
+  vm_features.clear_feature(CPU_AVX2);
+  vm_features.clear_feature(CPU_BMI1);
+  vm_features.clear_feature(CPU_BMI2);
+  vm_features.clear_feature(CPU_ERMS);
+  vm_features.clear_feature(CPU_ADX);
+  vm_features.clear_feature(CPU_SHA);
+//  vm_features.clear_feature(CPU_FMA);
+//  vm_features.clear_feature(CPU_VZEROUPPER);
+  vm_features.clear_feature(CPU_FLUSHOPT);
+  vm_features.clear_feature(CPU_CLWB);
+  vm_features.clear_feature(CPU_RDPID);
+  vm_features.clear_feature(CPU_FSRM);
+//  vm_features.clear_feature(CPU_F16C);
   return vm_features;
 }
 
