@@ -78,6 +78,7 @@ jobs:
           - debug-level: debug
             flags: --with-debug-level=slowdebug
             suffix: -debug
+            bundle-suffix: -slowdebug
 
     steps:
       - name: Setup Host for VM
@@ -199,5 +200,5 @@ jobs:
         uses: ./.github/actions/upload-bundles
         with:
           platform: ${{ inputs.platform }}
-          debug-suffix: '${{ matrix.suffix }}'
+          debug-suffix: '${{ matrix.bundle-suffix }}'
         if: ${{ inputs.dry-run == false }}
