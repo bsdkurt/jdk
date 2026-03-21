@@ -200,5 +200,6 @@ jobs:
         uses: ./.github/actions/upload-bundles
         with:
           platform: ${{ inputs.platform }}
-          debug-suffix: '${{ matrix.bundle-suffix }}'
+          debug-suffix: '${{ matrix.suffix }}'
+          bundle-suffix: '${{ matrix.bundle-suffix }}'
         if: ${{ inputs.dry-run == false }}
