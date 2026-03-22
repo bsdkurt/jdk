@@ -220,7 +220,6 @@ jobs:
             ${{ steps.extra-options.outputs.compile-jdk }}
             JTREG='JAVA_OPTIONS=-XX:-CreateCoredumpOnCrash;VERBOSE=fail,error,time;KEYWORDS=!headful;${{ steps.extra-options.outputs.extra-problem-lists }};${{ matrix.test-timeout-factor }}'
             && bash ./.github/scripts/gen-test-summary.sh "$GITHUB_STEP_SUMMARY" "$GITHUB_OUTPUT"
-            && exit 1
         if: ${{ inputs.dry-run == false }}
 
       - name: 'Check Memory, Swap and Disk Usage'
