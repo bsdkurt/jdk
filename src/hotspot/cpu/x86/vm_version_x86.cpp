@@ -1511,7 +1511,7 @@ void VM_Version::get_processor_features() {
 #endif // COMPILER2
       if (supports_sse4_2()) { // new ZX cpus
         if (FLAG_IS_DEFAULT(UseUnalignedLoadStores)) {
-          UseUnalignedLoadStores = true; // use movdqu on newest ZX cpus
+          //UseUnalignedLoadStores = true; // use movdqu on newest ZX cpus
         }
       }
     }
@@ -1566,7 +1566,7 @@ void VM_Version::get_processor_features() {
         FLAG_SET_DEFAULT(AllocatePrefetchInstr, 3);
       }
       if (supports_sse2() && FLAG_IS_DEFAULT(UseUnalignedLoadStores)) {
-        FLAG_SET_DEFAULT(UseUnalignedLoadStores, true);
+        //FLAG_SET_DEFAULT(UseUnalignedLoadStores, true);
       }
     }
 
@@ -1582,7 +1582,7 @@ void VM_Version::get_processor_features() {
       // On family >=17h processors use XMM and UnalignedLoadStores
       // for Array Copy
       if (supports_sse2() && FLAG_IS_DEFAULT(UseUnalignedLoadStores)) {
-        FLAG_SET_DEFAULT(UseUnalignedLoadStores, true);
+        //FLAG_SET_DEFAULT(UseUnalignedLoadStores, true);
       }
 #ifdef COMPILER2
       if (supports_sse4_2() && FLAG_IS_DEFAULT(UseFPUForSpilling)) {
@@ -1629,7 +1629,7 @@ void VM_Version::get_processor_features() {
 
       if ((supports_sse4_2() && supports_ht()) || supports_avx()) { // Newest Intel cpus
         if (FLAG_IS_DEFAULT(UseUnalignedLoadStores)) {
-          UseUnalignedLoadStores = true; // use movdqu on newest Intel cpus
+          //UseUnalignedLoadStores = true; // use movdqu on newest Intel cpus
         }
       }
     }
@@ -1641,7 +1641,7 @@ void VM_Version::get_processor_features() {
 #endif
       if (supports_sse4_2()) { // Silvermont
         if (FLAG_IS_DEFAULT(UseUnalignedLoadStores)) {
-          UseUnalignedLoadStores = true; // use movdqu on newest Intel cpus
+          //UseUnalignedLoadStores = true; // use movdqu on newest Intel cpus
         }
       }
       if (FLAG_IS_DEFAULT(UseIncDec)) {
@@ -1890,7 +1890,7 @@ void VM_Version::get_processor_features() {
 
   // This machine allows unaligned memory accesses
   if (FLAG_IS_DEFAULT(UseUnalignedAccesses)) {
-    FLAG_SET_DEFAULT(UseUnalignedAccesses, true);
+    //FLAG_SET_DEFAULT(UseUnalignedAccesses, true);
   }
 
 #ifndef PRODUCT
