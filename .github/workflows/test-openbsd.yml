@@ -206,6 +206,7 @@ jobs:
             done
           run: >
             ulimit -Sd $(ulimit -Hd) &&
+            ${{ steps.bundles.outputs.jdk-path }}/bin/java -XX:+PrintFlagsFinal -version &&
             gmake test-prebuilt
             TEST_JOBS=1
             TEST='${{ matrix.test-suite }}'

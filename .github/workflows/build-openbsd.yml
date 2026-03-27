@@ -127,6 +127,7 @@ jobs:
             mount -u -o wxallowed /home
             usermod -L pbuild root
             echo 'cd $GITHUB_WORKSPACE' >> ~/.vmenv
+            dmesg
 
       - name: 'Install toolchain and dependencies in VM'
         shell: openbsd {0}
