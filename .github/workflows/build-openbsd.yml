@@ -127,12 +127,26 @@ jobs:
           copyback: false
           prepare: |
             mount -u -o wxallowed /home
-            usermod -L pbuild root
+            sysctl kern.maxthread=16384
+            cat << EOF >> /etc/login.conf
+             
+            testjdk:\\
+                    :datasize-max=infinity:\\
+                    :datasize-cur=infinity:\\
+                    :maxproc-max=infinity:\\
+                    :maxproc-cur=infinity:\\
+                    :openfiles-max=infinity:\\
+                    :openfiles-cur=infinity:\\
+                    :tc=pbuild:
+            EOF
+            tail -n11 /etc/login.conf
+            usermod -L testjdk root
             echo 'cd $GITHUB_WORKSPACE' >> ~/.vmenv
 
       - name: 'Install toolchain and dependencies in VM'
         shell: openbsd {0}
         run: |
+          ulimit -a
           export PKG_CACHE=$GITHUB_WORKSPACE/obsd-pkg-cache
           mkdir -p ${PKG_CACHE}
           export PKG_PATH="${PKG_CACHE}:https://cdn.openbsd.org/%m"
