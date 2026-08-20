@@ -50,7 +50,7 @@ on:
       debug-levels:
         required: false
         type: string
-        default: '[ "debug", "release" ]'
+        default: '[ "debug" ]'
       configure-arguments:
         required: false
         type: string
@@ -125,10 +125,57 @@ jobs:
           envs: 'MYTOKEN'
           usesh: true
           copyback: false
+          debug-on-error: true
           prepare: |
             mount -u -o wxallowed /home
             usermod -L pbuild root
             echo 'cd $GITHUB_WORKSPACE' >> ~/.vmenv
+          run: |
+            export PKG_CACHE=$GITHUB_WORKSPACE/obsd-pkg-cache
+            mkdir -p ${PKG_CACHE}
+            export PKG_PATH="${PKG_CACHE}:https://cdn.openbsd.org/%m"
+            until pkg_add metaauto autoconf%2.69 gtar-- zip unzip-- cups-libs bash ggrep gmake dwz libiconv harfbuzz jpeg lcms2 png giflib; do
+              echo Retrying in 10 seconds; sleep 10;
+            done
+            pkg_add gdb
+            . ~/.vmenv && env \
+            AUTOCONF_VERSION=2.69 \
+            bash configure \
+            --with-conf-name=${{ inputs.platform }} \
+            ${{ matrix.flags }} \
+            --with-version-opt=${GITHUB_ACTOR}-${GITHUB_SHA} \
+            --with-boot-jdk=${{ steps.bootjdk.outputs.path }} \
+            --with-jtreg=${{ steps.jtreg.outputs.path }} \
+            --with-gtest=${{ steps.gtest.outputs.path }} \
+            --with-zlib=system \
+            --with-jmod-compress=zip-1 \
+            --with-external-symbols-in-bundles=none \
+            --with-native-debug-symbols-level=1 \
+            --with-stdc++lib=dynamic \
+            --with-toolchain-type=clang \
+            --with-fontconfig=/usr/X11R6 \
+            --with-cups=/usr/local \
+            --with-freetype=system \
+            --with-zlib=system \
+            --with-libpng=system \
+            --with-libjpeg=system \
+            --with-lcms=system \
+            --with-harfbuzz=system \
+            --with-giflib=system \
+            --with-giflib-include=/usr/local/include \
+            --with-giflib-lib=/usr/local/lib \
+            ${{ inputs.extra-conf-options }} ${{ inputs.configure-arguments }} || ( \
+            echo "Dumping config.log:" && \
+            cat config.log && \
+            exit 1)
+            . ~/.vmenv && \
+            gmake -k LOG=info product-bundles test-bundles
+            . ~/.vmenv && \
+            while ktrace -Bdi gmake run-test-only LOG=debug \
+            TEST="langtools/jdk/jshell/ToolSimpleTest.java" \
+            JTREG="KEYWORDS='!headful'" 2>&1 | tee ~/work/test-jdk.log ; do \
+            echo done; done
+            exit 1;
 
       - name: 'Install toolchain and dependencies in VM'
         shell: openbsd {0}
