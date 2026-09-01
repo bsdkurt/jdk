@@ -169,6 +169,7 @@ jobs:
           --with-giflib=system
           --with-giflib-include=/usr/local/include
           --with-giflib-lib=/usr/local/lib
+          --enable-jtreg-failure-handler=yes
           ${{ inputs.extra-conf-options }} ${{ inputs.configure-arguments }} || (
           echo "Dumping config.log:" &&
           cat config.log &&
