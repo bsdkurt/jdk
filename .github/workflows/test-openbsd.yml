@@ -66,62 +66,31 @@ jobs:
       fail-fast: false
       matrix:
         test-name:
-          - 'jdk/tier1 part 1'
-          - 'jdk/tier1 part 2'
-          - 'jdk/tier1 part 3'
-          - 'langtools/tier1'
-          - 'hs/tier1 common'
-          - 'hs/tier1 compiler part 1'
-          - 'hs/tier1 compiler part 2'
-          - 'hs/tier1 compiler part 3'
-          - 'hs/tier1 gc'
-          - 'hs/tier1 runtime'
-          - 'hs/tier1 serviceability'
-          - 'lib-test/tier1'
+          - 'langtools/tier1.1'
+          - 'langtools/tier1.2'
+          - 'langtools/tier1.3'
+          - 'langtools/tier1.4'
+          - 'langtools/tier1.5'
 
         include:
-          - test-name: 'jdk/tier1 part 1'
-            test-suite: 'test/jdk/:tier1_part1'
-
-          - test-name: 'jdk/tier1 part 2'
-            test-suite: 'test/jdk/:tier1_part2'
-
-          - test-name: 'jdk/tier1 part 3'
-            test-suite: 'test/jdk/:tier1_part3'
-
-          - test-name: 'langtools/tier1'
-            test-suite: 'test/langtools/:tier1'
-
-          - test-name: 'hs/tier1 common'
-            test-suite: 'test/hotspot/jtreg/:tier1_common'
+          - test-name: 'langtools/tier1.1'
+            test-suite: 'langtools/jdk/jshell/IgnoreTest.java'
             debug-suffix: ${{ inputs.debug-suffix }}
 
-          - test-name: 'hs/tier1 compiler part 1'
-            test-suite: 'test/hotspot/jtreg/:tier1_compiler_1'
+          - test-name: 'langtools/tier1.2'
+            test-suite: 'langtools/jdk/jshell/IgnoreTest.java'
             debug-suffix: ${{ inputs.debug-suffix }}
 
-          - test-name: 'hs/tier1 compiler part 2'
-            test-suite: 'test/hotspot/jtreg/:tier1_compiler_2'
+          - test-name: 'langtools/tier1.3'
+            test-suite: 'langtools/jdk/jshell/IgnoreTest.java'
             debug-suffix: ${{ inputs.debug-suffix }}
 
-          - test-name: 'hs/tier1 compiler part 3'
-            test-suite: 'test/hotspot/jtreg/:tier1_compiler_3'
+          - test-name: 'langtools/tier1.4'
+            test-suite: 'langtools/jdk/jshell/IgnoreTest.java'
             debug-suffix: ${{ inputs.debug-suffix }}
 
-          - test-name: 'hs/tier1 gc'
-            test-suite: 'test/hotspot/jtreg/:tier1_gc'
-            debug-suffix: ${{ inputs.debug-suffix }}
-
-          - test-name: 'hs/tier1 runtime'
-            test-suite: 'test/hotspot/jtreg/:tier1_runtime'
-            debug-suffix: ${{ inputs.debug-suffix }}
-
-          - test-name: 'hs/tier1 serviceability'
-            test-suite: 'test/hotspot/jtreg/:tier1_serviceability'
-            debug-suffix: ${{ inputs.debug-suffix }}
-
-          - test-name: 'lib-test/tier1'
-            test-suite: 'test/lib-test/:tier1'
+          - test-name: 'langtools/tier1.5'
+            test-suite: 'langtools/jdk/jshell/IgnoreTest.java'
             debug-suffix: ${{ inputs.debug-suffix }}
 
     steps:
@@ -195,28 +164,73 @@ jobs:
           cpu: 4
           envs: 'MYTOKEN'
           usesh: true
+          debug-on-error: true
           prepare: |
             mount -u -o wxallowed /home
             usermod -L pbuild root
             export PKG_CACHE=$GITHUB_WORKSPACE/obsd-pkg-cache
             mkdir -p ${PKG_CACHE}
             export PKG_PATH="${PKG_CACHE}:https://cdn.openbsd.org/%m"
-            until pkg_add gtar-- zip unzip-- cups-libs bash ggrep gmake dwz libiconv harfbuzz jpeg lcms2 png giflib; do
+            until pkg_add gtar-- zip unzip-- cups-libs bash ggrep gmake dwz libiconv harfbuzz jpeg lcms2 png giflib gdb; do
               echo Retrying in 10 seconds; sleep 10;
             done
-          run: >
-            ulimit -Sd $(ulimit -Hd) &&
-            gmake test-prebuilt
-            TEST='${{ matrix.test-suite }}'
-            BOOT_JDK=${{ steps.bootjdk.outputs.path }}
-            JT_HOME=${{ steps.jtreg.outputs.path }}
-            JDK_IMAGE_DIR=${{ steps.bundles.outputs.jdk-path }}
-            SYMBOLS_IMAGE_DIR=${{ steps.bundles.outputs.symbols-path }}
-            TEST_IMAGE_DIR=${{ steps.bundles.outputs.tests-path }}
-            ${{ steps.extra-options.outputs.test-jdk }}
-            ${{ steps.extra-options.outputs.compile-jdk }}
+          run: |
+            ulimit -Sd $(ulimit -Hd)
+            gmake test-prebuilt \
+            TEST='${{ matrix.test-suite }}' \
+            LOG=debug \
+            BOOT_JDK=${{ steps.bootjdk.outputs.path }} \
+            JT_HOME=${{ steps.jtreg.outputs.path }} \
+            JDK_IMAGE_DIR=${{ steps.bundles.outputs.jdk-path }} \
+            SYMBOLS_IMAGE_DIR=${{ steps.bundles.outputs.symbols-path }} \
+            TEST_IMAGE_DIR=${{ steps.bundles.outputs.tests-path }} \
+            ${{ steps.extra-options.outputs.test-jdk }} \
+            ${{ steps.extra-options.outputs.compile-jdk }} \
             JTREG='JAVA_OPTIONS=-XX:-CreateCoredumpOnCrash;VERBOSE=fail,error,time;KEYWORDS=!headful;${{ steps.extra-options.outputs.extra-problem-lists }}'
-            && bash ./.github/scripts/gen-test-summary.sh "$GITHUB_STEP_SUMMARY" "$GITHUB_OUTPUT"
+            cd /home/runner/work/jdk/jdk/build/run-test-prebuilt/test-support/jtreg_test_langtools_jdk_jshell_IgnoreTest_java
+            export DOCS_JDK_IMAGE_DIR=
+            export HOME=/root
+            export JTREG_REPEAT_COUNT=1000
+            export LANG=C.UTF-8
+            export LC_ALL=C
+            export TEST_IMAGE_DIR=/home/runner/work/jdk/jdk/bundles/tests
+            MAX_SECONDS=200
+            iteration=0
+            while :; do
+                iteration=$((iteration + 1))
+                start=$(date +%s)
+                if ! /home/runner/work/jdk/jdk/bundles/jdk/jdk-28/fastdebug/bin/java \
+                    -Dtest.vm.opts='-Xmx768m -XX:MaxRAMPercentage=12.5 -Dtest.boot.jdk=/home/runner/work/jdk/jdk/bootjdk/jdk -Djava.io.tmpdir=/home/runner/work/jdk/jdk/build/run-test-prebuilt/test-support/jtreg_test_langtools_jdk_jshell_IgnoreTest_java/tmp -ea -esa' \
+                    -Dtest.tool.vm.opts='-J-Xmx768m -J-XX:MaxRAMPercentage=12.5 -J-Dtest.boot.jdk=/home/runner/work/jdk/jdk/bootjdk/jdk -J-Djava.io.tmpdir=/home/runner/work/jdk/jdk/build/run-test-prebuilt/test-support/jtreg_test_langtools_jdk_jshell_IgnoreTest_java/tmp -J-ea -J-esa' \
+                    -Dtest.compiler.opts= \
+                    -Dtest.java.opts=-XX:-CreateCoredumpOnCrash \
+                    -Dtest.jdk=/home/runner/work/jdk/jdk/bundles/jdk/jdk-28/fastdebug \
+                    -Dcompile.jdk=/home/runner/work/jdk/jdk/bundles/jdk/jdk-28/fastdebug \
+                    -Dtest.timeout.factor=4.0 \
+                    -Dtest.root=/home/runner/work/jdk/jdk/test/langtools \
+                    -Dtest.name=jdk/jshell/IgnoreTest.java \
+                    -Dtest.verbose=Verbose[p=BRIEF,f=FULL,e=FULL,t=true,m=false] \
+                    -Dtest.file=/home/runner/work/jdk/jdk/test/langtools/jdk/jshell/IgnoreTest.java \
+                    -Dtest.main.class=IgnoreTest \
+                    -Dtest.src=/home/runner/work/jdk/jdk/test/langtools/jdk/jshell \
+                    -Dtest.src.path=/home/runner/work/jdk/jdk/test/langtools/jdk/jshell \
+                    -Dtest.classes=/home/runner/work/jdk/jdk/build/run-test-prebuilt/test-support/jtreg_test_langtools_jdk_jshell_IgnoreTest_java/classes/0/jdk/jshell/IgnoreTest.d \
+                    -Dtest.class.path=/home/runner/work/jdk/jdk/build/run-test-prebuilt/test-support/jtreg_test_langtools_jdk_jshell_IgnoreTest_java/classes/0/jdk/jshell/IgnoreTest.d \
+                    -Dtest.class.path.prefix=/home/runner/work/jdk/jdk/build/run-test-prebuilt/test-support/jtreg_test_langtools_jdk_jshell_IgnoreTest_java/classes/0/jdk/jshell/IgnoreTest.d:/home/runner/work/jdk/jdk/test/langtools/jdk/jshell \
+                    -classpath /home/runner/work/jdk/jdk/build/run-test-prebuilt/test-support/jtreg_test_langtools_jdk_jshell_IgnoreTest_java/classes/0/jdk/jshell/IgnoreTest.d:/home/runner/work/jdk/jdk/test/langtools/jdk/jshell:/home/runner/work/jdk/jdk/jtreg/installed/lib/junit-platform-console-standalone-1.14.2.jar:/home/runner/work/jdk/jdk/jtreg/installed/lib/javatest.jar:/home/runner/work/jdk/jdk/jtreg/installed/lib/jtreg.jar \
+                    com.sun.javatest.regtest.agent.JUnitRunner jdk/jshell/IgnoreTest.java IgnoreTest
+                  then
+                    status=$?
+                    echo "Iteration $iteration: program exited with status $status" >&2
+                fi
+                end=$(date +%s)
+                elapsed=$((end - start))
+                echo "Iteration $iteration took ${elapsed}s"
+                if [ "$elapsed" -gt "$MAX_SECONDS" ]; then
+                    echo "Iteration $iteration exceeded ${MAX_SECONDS}s (took ${elapsed}s) - stopping." >&2
+                    exit 0
+                fi
+            done
         if: ${{ inputs.dry-run == false }}
 
       - name: 'Check Memory, Swap and Disk Usage'
@@ -249,7 +263,7 @@ jobs:
 
           if [[ -d build/run-test-prebuilt/test-support ]]; then
             cd build/run-test-prebuilt/test-support/
-            zip -r -9 "$GITHUB_WORKSPACE/results/test-support.zip" . -i *.jtr -i */hs_err*.log -i */replay*.log
+            zip -r -9 "$GITHUB_WORKSPACE/results/test-support.zip" . -i *.jtr -i */hs_err*.log -i */replay*.log -i \*/jdk/jshell/* -x *.class -i */ktrace.out
             cd $GITHUB_WORKSPACE
           else
             echo '::warning ::Missing test-support directory'
