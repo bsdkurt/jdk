@@ -65,18 +65,18 @@ jobs:
       # List of platforms to exclude by default
       EXCLUDED_PLATFORMS: 'alpine-linux-x64'
     outputs:
-      linux-x64: ${{ steps.include.outputs.linux-x64 }}
-      linux-x64-variants: ${{ steps.include.outputs.linux-x64-variants }}
-      linux-aarch64: ${{ steps.include.outputs.linux-aarch64 }}
-      linux-cross-compile: ${{ steps.include.outputs.linux-cross-compile }}
-      alpine-linux-x64: ${{ steps.include.outputs.alpine-linux-x64 }}
-      macos-x64: ${{ steps.include.outputs.macos-x64 }}
-      macos-aarch64: ${{ steps.include.outputs.macos-aarch64 }}
-      windows-x64: ${{ steps.include.outputs.windows-x64 }}
-      windows-aarch64: ${{ steps.include.outputs.windows-aarch64 }}
+      linux-x64: false
+      linux-x64-variants: false
+      linux-aarch64: false
+      linux-cross-compile: false
+      alpine-linux-x64: false
+      macos-x64: false
+      macos-aarch64: false
+      windows-x64: false
+      windows-aarch64: false
       openbsd-x64: ${{ steps.include.outputs.openbsd-x64 }}
-      freebsd-x64: ${{ steps.include.outputs.freebsd-x64 }}
-      docs: ${{ steps.include.outputs.docs }}
+      freebsd-x64: false
+      docs: false
       dry-run: ${{ steps.include.outputs.dry-run }}
 
     steps:
