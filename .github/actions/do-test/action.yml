@@ -93,6 +93,7 @@ runs:
         sudo xcode-select --switch /Applications/Xcode_${{ inputs.xcode-toolset-version }}.app/Contents/Developer
         # This will make GNU make available as 'make' and not only as 'gmake'
         echo '/usr/local/opt/make/libexec/gnubin' >> $GITHUB_PATH
+      shell: bash
       if: runner.os == 'macOS'
 
     - name: 'Set PATH'
@@ -111,6 +112,7 @@ runs:
           echo "static-langtools-problemlist-path=`pwd`/test/langtools/ProblemList-StaticJdk.txt" >> $GITHUB_OUTPUT
           echo "static-lib-test-problemlist-path=`pwd`/test/lib-test/ProblemList-StaticJdk.txt" >> $GITHUB_OUTPUT
         fi
+      shell: bash
 
     - name: 'Set Extra Options'
       id: extra-options
@@ -120,6 +122,7 @@ runs:
           echo "compile-jdk=JDK_FOR_COMPILE=${{ steps.bundles.outputs.jdk-path }}" >> $GITHUB_OUTPUT
           echo "extra-problem-lists=EXTRA_PROBLEM_LISTS=${{ steps.path.outputs.static-hotspot-problemlist-path }}%20${{ steps.path.outputs.static-jdk-problemlist-path }}%20${{ steps.path.outputs.static-langtools-problemlist-path }}%20${{ steps.path.outputs.static-lib-test-problemlist-path }}" >> $GITHUB_OUTPUT
         fi
+      shell: bash
 
     - name: 'Run tests'
       id: run-tests
@@ -137,12 +140,14 @@ runs:
         && bash ./.github/scripts/gen-test-summary.sh "$GITHUB_STEP_SUMMARY" "$GITHUB_OUTPUT"
       env:
         PATH: ${{ steps.path.outputs.value }}
+      shell: bash
       if: ${{ inputs.dry-run == false }}
 
       # This is a separate step, since if the markdown from a step gets bigger than
       # 1024 kB it is skipped, but then the short summary above is still generated
     - name: 'Generate test report'
       run: bash ./.github/scripts/gen-test-results.sh "$GITHUB_STEP_SUMMARY"
+      shell: bash
       if: always()
 
     - name: 'Package test results'
@@ -169,6 +174,7 @@ runs:
 
         artifact_name="results-${{ inputs.platform }}-$(echo ${{ inputs.test-name }}${{ inputs.static-suffix }} | tr '/ ' '__')"
         echo "artifact-name=$artifact_name" >> $GITHUB_OUTPUT
+      shell: bash
       if: always()
 
     - name: 'Upload test results'
