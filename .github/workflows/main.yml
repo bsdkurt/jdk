@@ -466,6 +466,20 @@ jobs:
       xcode-toolset-version: '16.4'
       debug-suffix: -debug
 
+  test-macos-aarch64-tier2:
+    name: macos-aarch64
+    needs:
+      - prepare
+      - build-macos-aarch64
+    uses: ./.github/workflows/test-tier2.yml
+    with:
+      platform: macos-aarch64
+      bootjdk-platform: macos-aarch64
+      runs-on: macos-15
+      dry-run: ${{ needs.prepare.outputs.dry-run == 'true' }}
+      xcode-toolset-version: '16.4'
+      debug-suffix: -debug
+
   test-windows-x64:
     name: windows-x64
     needs:
