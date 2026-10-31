@@ -75,6 +75,20 @@ jobs:
         shell: bash
         run: |
           TIER1_MATRIX='{
+            "test-name": [
+              "jdk/tier1 part 1",
+              "jdk/tier1 part 2",
+              "jdk/tier1 part 3",
+              "langtools/tier1",
+              "hs/tier1 common",
+              "hs/tier1 compiler part 1",
+              "hs/tier1 compiler part 2",
+              "hs/tier1 compiler part 3",
+              "hs/tier1 gc",
+              "hs/tier1 runtime",
+              "hs/tier1 serviceability",
+              "lib-test/tier1"
+            ],
             "include": [
               {
                 "test-name": "jdk/tier1 part 1",
@@ -136,6 +150,19 @@ jobs:
           }'
 
           TIER2_MATRIX='{
+            "test-name": [
+              "jdk/tier2 part 1",
+              "jdk/tier2 part 2",
+              "jdk/tier2 part 3",
+              "langtools/tier2",
+              "hs/tier2 runtime",
+              "hs/tier2 runtime platform agnostic",
+              "hs/tier2 serviceability",
+              "hs/tier2 compiler",
+              "hs/tier2 ctw",
+              "hs/tier2 gc epsilon",
+              "hs/tier2 gc shenandoah"
+            ],
             "include": [
               {
                 "test-name": "jdk/tier2 part 1",
